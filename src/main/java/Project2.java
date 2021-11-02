@@ -2,15 +2,24 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 
 public class Project2
 {
-    public record Rating(int rating, int position) { }
+    public record Rating(int rating, int position) implements Comparable<Rating>
+    {
+        @Override
+        public int compareTo(final Rating other)
+        {
+            return Integer.compare(rating, other.rating);
+        }
+    }
 
     public static void main(final String[] args) throws IOException
     {
         final Rating[] ratings = readRatings();
+        Arrays.sort(ratings);
     }
 
     private static Rating[] readRatings() throws IOException
