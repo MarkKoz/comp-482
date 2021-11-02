@@ -6,7 +6,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
-import java.util.List;
+import java.util.regex.MatchResult;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -14,7 +16,7 @@ public class Project2
 {
     public static void main(final String[] args) throws IOException
     {
-        final int[] ratings = readRatings();
+        final Integer[] ratings = readRatings();
 
         // clang-format off
 
@@ -50,29 +52,17 @@ public class Project2
         System.out.println(total);
     }
 
-    private static int[] readRatings() throws IOException
+    private static Integer[] readRatings() throws IOException
     {
         final Path file = Paths.get("input.txt");
-        final List<String> lines = Files.readAllLines(file);
+        final String content = Files.readString(file);
+        final Matcher matcher = Pattern.compile("\\d+").matcher(content);
 
-        // Get the first line and use it to allocate an array of that size.
-        final int n = Integer.parseInt(lines.get(0));
-        final int[] ratings = new int[n];
-
-        // Create an iterator of lines that skips the 1st line, since that was already read above.
-        final Iterable<String> linesIterable = lines.stream().skip(1)::iterator;
-        int position = 0;
-
-        // Populate the ratings arrays with pairs of the value and position.
-        // Iterate each line since ratings could be on multiple lines.
-        for (final String line : linesIterable) {
-            // Split each line by any whitespace chars.
-            for (final String num : line.split("\\s+")) {
-                ratings[position] = Integer.parseInt(num);
-                ++position;
-            }
-        }
-
-        return ratings;
+        // Skip the 1st item (length) because it's redundant with streams.
+        return matcher.results()
+            .skip(1)
+            .map(MatchResult::group)
+            .map(Integer::parseInt)
+            .toArray(Integer[] ::new);
     }
 }
