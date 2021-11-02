@@ -1,3 +1,6 @@
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -20,6 +23,30 @@ public class Project2
     {
         final Rating[] ratings = readRatings();
         Arrays.sort(ratings);
+
+        // Final values must be > 1, so the default of 0 is a perfect "empty" value.
+        final int[] out = new int[ratings.length];
+        int total = 0;
+
+        for (final Rating rating : ratings) {
+            // Clamp the indices to the bounds of the array.
+            // If the neighbour is out of bounds, it will just stay at the current
+            // position, which has a value of 0 and is therefore equivalent to
+            // it having a neighbour there that was empty.
+            final int left = out[max(rating.position - 1, 0)];
+            final int right = out[min(rating.position + 1, out.length - 1)];
+
+            // To minimise the value being inserted, find the greater neighbour and
+            // add 1 to it. Why +1? Because the list is sorted in ascending order.
+            // Therefore, the current item will always be larger than its neighbours.
+            // Thus, the resulting value must also be larger than its neighbours.
+            out[rating.position] = max(left, right) + 1;
+
+            // Track the total now to avoid an extra iteration later to sum it up.
+            total += out[rating.position];
+        }
+
+        System.out.println(total);
     }
 
     private static Rating[] readRatings() throws IOException
@@ -31,7 +58,7 @@ public class Project2
         final int n = Integer.parseInt(lines.get(0));
         final Rating[] ratings = new Rating[n];
 
-        // Create an iterator of lines that skips the 1st line, size that was already read above.
+        // Create an iterator of lines that skips the 1st line, since that was already read above.
         final Iterable<String> linesIterable = lines.stream().skip(1)::iterator;
         int position = 0;
 
