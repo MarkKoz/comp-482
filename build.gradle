@@ -1,0 +1,11 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group 'csun.comp.482'
+version '1.0-SNAPSHOT'
+
+application {
+    mainClass = 'Project3'
+}
