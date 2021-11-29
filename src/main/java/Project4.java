@@ -11,6 +11,31 @@ public class Project4
     public static void main(final String[] args) throws IOException
     {
         final Integer[] integers = readIntegers();
+        final int[] sums = new int[integers.length];
+
+        final int sum = maxNonConsecutiveSum(integers, integers.length - 1, sums);
+        System.out.println(sum);
+    }
+
+    private static int maxNonConsecutiveSum(
+        final Integer[] integers, final int end, final int[] sums)
+    {
+        // Base case
+        if (end < 2) {
+            return sums[end] = integers[end];
+        }
+
+        // Recursive cases
+        // The max sum which ends at the previous index.
+        sums[end - 1] = maxNonConsecutiveSum(integers, end - 1, sums);
+
+        // The max sum which ends at the current index.
+        // It could be the current integer added to the previous sum.
+        // Alternatively, it could be the current integer or the previous sum alone.
+        final int prevSum = maxNonConsecutiveSum(integers, end - 2, sums);
+        sums[end] = Math.max(integers[end], Math.max(prevSum + integers[end], prevSum));
+
+        return Math.max(sums[end - 1], sums[end]);
     }
 
     private static Integer[] readIntegers() throws IOException
